@@ -75,7 +75,7 @@ CREATE TABLE `test_paciente` (
   `id` int(11) NOT NULL,
   `codigo_lab` int(11) NOT NULL,
   `fecha_carga` varchar(10) COLLATE latin1_general_ci NOT NULL,
-  `cedula_paciente` varchar(10) COLLATE latin1_general_ci DEFAULT ' ',
+  `cedula_paciente` varchar(35) COLLATE latin1_general_ci DEFAULT ' ',
   `pasaporte_paciente` varchar(35) COLLATE latin1_general_ci DEFAULT ' ',
   `nombre_paciente` varchar(60) COLLATE latin1_general_ci NOT NULL,
   `apellido1_paciente` varchar(60) COLLATE latin1_general_ci NOT NULL,
