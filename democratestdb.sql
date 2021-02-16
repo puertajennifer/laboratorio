@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 11-02-2021 a las 05:36:49
+-- Tiempo de generación: 16-02-2021 a las 12:53:08
 -- Versión del servidor: 10.1.34-MariaDB
 -- Versión de PHP: 7.2.8
 
@@ -40,7 +40,7 @@ CREATE TABLE `laboratorio` (
 
 INSERT INTO `laboratorio` (`id`, `nombre`, `id_plantilla`) VALUES
 (1, 'ARQUIMEA', 1),
-(2, 'LIFE LENNGTH', 3),
+(2, 'LIFE LENGTH', 3),
 (3, 'LABORATORIO OTRO', 2);
 
 -- --------------------------------------------------------
@@ -91,11 +91,9 @@ CREATE TABLE `test_paciente` (
   `nProtein` varchar(15) COLLATE latin1_general_ci DEFAULT ' ',
   `sProtein` varchar(15) COLLATE latin1_general_ci DEFAULT ' ',
   `orfLab` varchar(15) COLLATE latin1_general_ci DEFAULT ' ',
-  `PCR` varchar(15) COLLATE latin1_general_ci DEFAULT ' ',
   `ELISA` varchar(15) COLLATE latin1_general_ci DEFAULT ' ',
   `PCRMultidiagnostico` varchar(15) COLLATE latin1_general_ci DEFAULT ' ',
-  `archivo_resultados` varchar(150) COLLATE latin1_general_ci DEFAULT ' ',
-  `sts_enviomail` varchar(1) COLLATE latin1_general_ci DEFAULT ' ',
+  `sts_enviomail` varchar(2) COLLATE latin1_general_ci DEFAULT ' ',
   `fecha_envio` varchar(10) COLLATE latin1_general_ci DEFAULT ' '
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
@@ -141,9 +139,10 @@ ALTER TABLE `plantillaxls`
 -- AUTO_INCREMENT de la tabla `test_paciente`
 --
 ALTER TABLE `test_paciente`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
