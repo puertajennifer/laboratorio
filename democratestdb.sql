@@ -40,8 +40,7 @@ CREATE TABLE `laboratorio` (
 
 INSERT INTO `laboratorio` (`id`, `nombre`, `id_plantilla`) VALUES
 (1, 'ARQUIMEA', 1),
-(2, 'LIFE LENGTH', 3),
-(3, 'LABORATORIO OTRO', 2);
+(2, 'LIFE LENGTH', 3);
 
 -- --------------------------------------------------------
 
@@ -93,6 +92,7 @@ CREATE TABLE `test_paciente` (
   `orfLab` varchar(15) COLLATE latin1_general_ci DEFAULT ' ',
   `ELISA` varchar(15) COLLATE latin1_general_ci DEFAULT ' ',
   `PCRMultidiagnostico` varchar(15) COLLATE latin1_general_ci DEFAULT ' ',
+  `pdf_resultado` varchar(250) COLLATE latin1_general_ci DEFAULT ' ',
   `sts_enviomail` varchar(2) COLLATE latin1_general_ci DEFAULT ' ',
   `fecha_envio` varchar(10) COLLATE latin1_general_ci DEFAULT ' '
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
