@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 16-02-2021 a las 12:53:08
+-- Tiempo de generación: 01-03-2021 a las 05:15:16
 -- Versión del servidor: 10.1.34-MariaDB
 -- Versión de PHP: 7.2.8
 
@@ -94,7 +94,8 @@ CREATE TABLE `test_paciente` (
   `PCRMultidiagnostico` varchar(15) COLLATE latin1_general_ci DEFAULT ' ',
   `pdf_resultado` varchar(250) COLLATE latin1_general_ci DEFAULT ' ',
   `sts_enviomail` varchar(2) COLLATE latin1_general_ci DEFAULT ' ',
-  `fecha_envio` varchar(10) COLLATE latin1_general_ci DEFAULT ' '
+  `fecha_envio` varchar(10) COLLATE latin1_general_ci DEFAULT ' ',
+  `enviar` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
@@ -139,7 +140,7 @@ ALTER TABLE `plantillaxls`
 -- AUTO_INCREMENT de la tabla `test_paciente`
 --
 ALTER TABLE `test_paciente`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT=1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
