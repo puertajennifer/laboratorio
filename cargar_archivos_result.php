@@ -8,6 +8,7 @@ $subidos = false;
 $errorMSG =  "";
 
 $id_lab = $_POST['inputLab']; 
+
 $dir_subida = 'files/';
 
 $count = 0;
@@ -16,12 +17,14 @@ $exito = 0;
 ini_set('max_execution_time', 200);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-    $cant_archivos_upload = sizeof($_FILES['files']['name']);
+    $cant_archivos_upload = sizeof($_FILES['archivospdf']['name']);
+    //echo "cant_archivos_upload:" . $cant_archivos_upload;
+    
     ini_set('max_file_uploads', $cant_archivos_upload);
 
-    foreach ($_FILES['files']['name'] as $i => $name) {
-        if (strlen($_FILES['files']['name'][$i]) > 1) {
-            if (move_uploaded_file($_FILES['files']['tmp_name'][$i], $dir_subida.$name)) {
+    foreach ($_FILES['archivospdf']['name'] as $i => $name) {
+        if (strlen($_FILES['archivospdf']['name'][$i]) > 1) {
+            if (move_uploaded_file($_FILES['archivospdf']['tmp_name'][$i], $dir_subida.$name)) {
                 //echo "archivo " . $dir_subida.$name . " subido con exito;";
                 $count++;      
                 $subidos = true;         

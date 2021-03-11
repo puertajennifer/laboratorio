@@ -30,6 +30,10 @@ echo "
 	<script src='js/bootstrap.min.js' crossorigin='anonymous'></script>
 	<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js'></script>
 	<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js'></script>
+
+	<div id='wait' style='display: none; width: 100%; height: 100%; top: 100px; left: 0px; position: fixed; z-index: 10000; text-align: center;'>
+	<img src='images/ajax-loader.gif' width='45' height='45' alt='Loading...' style='position: fixed; top: 50%; left: 50%;' />
+</div>
 "; 
 
 // enter your database host, name, username, and password
@@ -50,11 +54,47 @@ catch(PDOException $e) {
 }
 
 echo "
+
+<script>
+$(document).ready(function() {
+	$(document).ready(function () { 
+		$(document).ajaxStart(function () {
+			   $('#wait').show();
+		   });
+		   $(document).ajaxStop(function () {
+			   $('#wait').hide();
+		   });
+		   $(document).ajaxError(function () {
+			   $('#wait').hide();
+		   });   
+	   });
+});
+</script>
+
+<script>
+	function show(){		
+		document.getElementById('wait').style.display = 'block';		
+	}
+
+	function hide(){
+		document.getElementById('wait').style.display = 'none';		
+	}
+
+	function blockearbtn(){		
+		document.getElementById('form2-submit').disabled=true;	
+	}
+
+	function desblockearbtn(){
+		document.getElementById('form2-submit').disabled=false;	
+	}
+</script>
+
+
 <script>
 	$(document).ready(function() {
 		$('#form_carga').submit(function (e) { 
 			e.preventDefault();	
-			$('#form-submit').attr('disabled', true);
+			$('#form-submit').attr('disabled', true);						
 
 			var parametros=new FormData($(this)[0]);
 			$.ajax({
@@ -82,44 +122,68 @@ echo "
 <script>
 	$(document).ready(function() {
 		$('#form_actualizacion').submit(function (e) { 
+			blockearbtn();
+			show();
 			e.preventDefault();	
 
-			$('#form2-submit').attr('disabled', true);
+			var numFiles = document.getElementById('archivospdf').files.length;
+			var maximo = document.getElementById('maxupload').value;			
+			var iteraciones = Math.ceil(numFiles / maximo);			
 
-			var parametros=new FormData($(this)[0]);
-			$.ajax({
-				url: 'cargar_archivos_result.php',
-				type: 'post',
-				data: parametros,
-				contentType: false,
-				processData: false,
-				success: function(text){
-                    if (text == 'success'){
-                        alert('Resulados actualizados satisfactoriamente');
-						window.location='index.php';
-                    } else {
-                        formError();
-                        submitMSG2(false,text);
-                    }
-					$('#form2-submit').attr('disabled', false);
-				}
-			});
-			return false;
-		});
+			if (iteraciones == 0)
+			{
+				iteraciones = 1;
+			}
+
+			var i = 0;
+			var cont = 1;
+
+			do {
+				var parametros = new FormData();
+				var idlab = $('#inputLab2').val();
+				parametros.append('inputLab',idlab);	
+
+				var k = 0;
+								
+				for (var j = i; j < i + maximo; j++)
+				{
+					parametros.append('archivospdf[]', document.getElementById('archivospdf').files[j]);					
+					k = j;
+					if (k >= numFiles)
+					{
+						break;
+					}
+				}				
+
+				$.ajax({
+					url: 'cargar_archivos_result.php',
+					async: false,
+					type: 'post',
+					data: parametros,
+					contentType: false,
+					processData: false,
+					success: function(text){
+						if (text == 'success'){													
+							window.location='index.php';
+						} else {
+							formError();
+							submitMSG2(false,text);
+						}														
+					}
+				});
+
+				i = i + k;
+				cont++;
+				
+			} while (cont <= iteraciones);
+
+			alert('Proceso culminado');
+			window.location='index.php';
+			desblockearbtn();			
+			hide();	
+			return false;			
+		});		
 	});
-</script>
-
-<script>
-	document.getElementById('files').addEventListener('change', function(event) {
-		let output = document.getElementById('listing');
-		let files = event.target.files;
-	
-		for (let i=0; i<files.length; i++) {
-			let item = document.createElement('li');
-			item.innerHTML = files[i].webkitRelativePath;
-			output.appendChild(item);
-		};
-	}, false);
 </script>
 ";
 
@@ -194,7 +258,7 @@ echo "
 						<label for='inputLab'>
 							Laboratorio
 						</label>
-						<select class='form-control' id='inputLab' name='inputLab' required>
+						<select class='form-control' id='inputLab2' name='inputLab2' required>
 								<option value=''>Seleccione</option>";
 								$stmt = $dbh->prepare('SELECT * FROM laboratorio');
 								$stmt->execute();
@@ -211,13 +275,13 @@ echo "
 					echo "</select>
 					</div>
 					<div class='form-group'>
-						<input type='file' class='form-control-file' id='files' name='files[]' webkitdirectory directory multiple required/>											
+						<input type='file' class='form-control-file' id='archivospdf' accept='.pdf' multiple='' required/>											
 					</div>
 					<div class='form-group'>											
 						<button type='submit' id='form2-submit' class='btn btn-democratest'>
 							Procesar
 						</button>
-						<input id='maxupload' name='maxupload' type='hidden' value=; echo $max_upload ; echo >	
+						<input id='maxupload' name='maxupload' type='hidden' value="; echo $max_upload ; echo ">	
 						<label> Máximo "; echo $max_upload ; echo " archivos por directorio</label>							
 					</div>	
 					<div class='row'>
