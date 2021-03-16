@@ -119,45 +119,26 @@ $(document).ready(function() {
 	});
 </script>
 
+
 <script>
 	$(document).ready(function() {
 		$('#form_actualizacion').submit(function (e) { 
-			blockearbtn();
-			show();
 			e.preventDefault();	
-
+			$('#form2-submit').attr('disabled', true);
+			$('#wait').show();	
+		
 			var numFiles = document.getElementById('archivospdf').files.length;
-			var maximo = document.getElementById('maxupload').value;			
-			var iteraciones = Math.ceil(numFiles / maximo);			
-
-			if (iteraciones == 0)
-			{
-				iteraciones = 1;
-			}
-
-			var i = 0;
-			var cont = 1;
-
-			do {
+							
+			for (var i = 0; i < numFiles; i++)
+			{					
 				var parametros = new FormData();
 				var idlab = $('#inputLab2').val();
 				parametros.append('inputLab',idlab);	
-
-				var k = 0;
-								
-				for (var j = i; j < i + maximo; j++)
-				{
-					parametros.append('archivospdf[]', document.getElementById('archivospdf').files[j]);					
-					k = j;
-					if (k >= numFiles)
-					{
-						break;
-					}
-				}				
-
+				
+				parametros.append('archivospdf[]', document.getElementById('archivospdf').files[i]);					
+			
 				$.ajax({
 					url: 'cargar_archivos_result.php',
-					async: false,
 					type: 'post',
 					data: parametros,
 					contentType: false,
@@ -170,17 +151,13 @@ $(document).ready(function() {
 							submitMSG2(false,text);
 						}														
 					}
-				});
-
-				i = i + k;
-				cont++;
-				
-			} while (cont <= iteraciones);
+				});				
+			}	
 
 			alert('Proceso culminado');
 			window.location='index.php';
-			desblockearbtn();			
-			hide();	
+			$('#form2-submit').attr('disabled', false);
+			$('#wait').hide();
 			return false;			
 		});		
 	});
