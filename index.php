@@ -124,42 +124,30 @@ $(document).ready(function() {
 	$(document).ready(function() {
 		$('#form_actualizacion').submit(function (e) { 
 			e.preventDefault();	
-			$('#form2-submit').attr('disabled', true);
-			$('#wait').show();	
+			$('#form2-submit').attr('disabled', true);		
+			var parametros=new FormData($(this)[0]);				
 		
-			var numFiles = document.getElementById('archivospdf').files.length;
-							
-			for (var i = 0; i < numFiles; i++)
-			{					
-				var parametros = new FormData();
-				var idlab = $('#inputLab2').val();
-				parametros.append('inputLab',idlab);	
+			$.ajax({
+				url: 'cargar_archivos_result.php',
+				type: 'post',
+				data: parametros,
+				contentType: false,
+				processData: false,
+				success: function(text){
+					if (text == 'success'){	
+						alert('Proceso culminado satisfactoriamente');		
+						window.location='index.php';																				
+					} else {
+						formError();
+						submitMSG2(false,text);
+					}	
+					$('#form2-submit').attr('disabled', false);															
+				}
+			});				
+						
 				
-				parametros.append('archivospdf[]', document.getElementById('archivospdf').files[i]);					
-			
-				$.ajax({
-					url: 'cargar_archivos_result.php',
-					type: 'post',
-					data: parametros,
-					contentType: false,
-					processData: false,
-					success: function(text){
-						if (text == 'success'){													
-							window.location='index.php';
-						} else {
-							formError();
-							submitMSG2(false,text);
-						}														
-					}
-				});				
-			}	
-
-			alert('Proceso culminado');
-			window.location='index.php';
-			$('#form2-submit').attr('disabled', false);
-			$('#wait').hide();
 			return false;			
-		});		
+		});	
 	});
 </script>
 ";
@@ -221,8 +209,7 @@ echo "
 						<div class='clearfix'></div>
 					</div>	
 				</form>
-			</p>
-			
+			</p>			
 		</div>
 		<div class='col-md-4'>
 			<h2>
@@ -251,15 +238,13 @@ echo "
 								}			
 					echo "</select>
 					</div>
-					<div class='form-group'>
-						<input type='file' class='form-control-file' id='archivospdf' accept='.pdf' multiple='' required/>											
-					</div>
-					<div class='form-group'>											
+					<div class='form-group'>				
+						<div class='form-group'>
+							<input type='file' class='form-control-file' id='archivospdf' name='archivospdf' accept='.zip' required/>											
+						</div>										
 						<button type='submit' id='form2-submit' class='btn btn-democratest'>
 							Procesar
-						</button>
-						<input id='maxupload' name='maxupload' type='hidden' value="; echo $max_upload ; echo ">	
-						<label> Máximo "; echo $max_upload ; echo " archivos por directorio</label>							
+						</button>						
 					</div>	
 					<div class='row'>
 						<div id='msgSubmit2' class='h5 text-center hidden'>Archivo procesado</div>			
