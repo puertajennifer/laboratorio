@@ -18,8 +18,6 @@ ini_set('max_execution_time', 200);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
     $cant_archivos_upload = sizeof($_FILES['archivospdf']['name']);
-    //echo "cant_archivos_upload:" . $cant_archivos_upload;
-    
     ini_set('max_file_uploads', $cant_archivos_upload);
 
     foreach ($_FILES['archivospdf']['name'] as $i => $name) {
