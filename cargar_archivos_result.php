@@ -7,28 +7,52 @@ $success = false;
 $subidos = false;
 $errorMSG =  "";
 
-$id_lab = $_POST['inputLab']; 
-
+$id_lab = $_POST['inputLab2']; 
 $dir_subida = 'files/';
-
-$count = 0;
-$exito = 0;
 
 ini_set('max_execution_time', 200);
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-    $cant_archivos_upload = sizeof($_FILES['archivospdf']['name']);
-    ini_set('max_file_uploads', $cant_archivos_upload);
+if ($_SERVER['REQUEST_METHOD'] == 'POST')
+{
+    if(copy($_FILES['archivospdf']['tmp_name'], $dir_subida.$_FILES['archivospdf']['name']))
+    {
+       //obtenemos datos de nuestro ZIP
+        $nombre = $_FILES["archivospdf"]["name"];
+        $ruta = $_FILES["archivospdf"]["tmp_name"];
+        $tipo = $_FILES["archivospdf"]["type"];
 
-    foreach ($_FILES['archivospdf']['name'] as $i => $name) {
-        if (strlen($_FILES['archivospdf']['name'][$i]) > 1) {
-            if (move_uploaded_file($_FILES['archivospdf']['tmp_name'][$i], $dir_subida.$name)) {
-                //echo "archivo " . $dir_subida.$name . " subido con exito;";
-                $count++;      
-                $subidos = true;         
-            }
-        }
-    }
+        $ext = pathinfo($nombre, PATHINFO_EXTENSION);
+
+        switch ($ext)
+        {
+            case 'zip':
+                // Función descomprimir 
+                $zip = new ZipArchive;
+                if ($zip->open($ruta) === TRUE) 
+                {
+                    //función para extraer el ZIP
+                    $extraido = $zip->extractTo($dir_subida);                    
+                    $zip->close();
+
+                    $from = $dir_subida . substr($nombre,0,strlen($nombre)-4);
+                    $to = $dir_subida;                  
+                    
+                    $dir = opendir($from);
+                                
+                    //Recorro el directorio para leer los archivos que tiene
+                    while(($file = readdir($dir)) !== false){
+                        //Leo todos los archivos excepto . y ..
+                        if(strpos($file, '.') !== 0){
+                            //Copio el archivo manteniendo el mismo nombre en la nueva carpeta
+                            copy($from.'/'.$file, $to.'/'.$file);
+                        }
+                    }
+                    $subidos = true;
+                }
+                break;                     
+        }         
+        
+    }       
 
     if ($subidos)
     {
@@ -48,6 +72,7 @@ if ($success && $errorMSG == ""){
          echo $errorMSG;
      }
 }
+
 
 function actualizarbd_pdfresultados($path, $id_lab, $conn){
     $countpdf = 0;    
