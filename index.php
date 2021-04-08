@@ -35,7 +35,7 @@ echo "
 	<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js'></script>
 	<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js'></script>
 
-	<div id='wait' style='display: none; width: 100%; height: 100%; top: 300px; left: 0px; position: fixed; z-index: 10000; text-align: center;'>
+	<div id='wait' style='display: none; width: 100%; height: 100%; top: 290px; left: 0px; position: fixed; z-index: 10000; text-align: center;'>
 		<div class='progress'>
 			<div class='progress-bar' role='progressbar' style='width: 0%' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100'>0%</div>
 		</div>
@@ -138,7 +138,7 @@ $(document).ready(function() {
 		$('.progress-bar').text(percent+'%');
 
 		//complete
-		if (percent == 100) {
+		if (percent >= 100) {
 			clearInterval(timerId);
 			$('.information').show();
 		}
