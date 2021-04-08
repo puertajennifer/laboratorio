@@ -9,7 +9,8 @@ if(!ob_start('ob_gzhandler'))
 header('Content-Type: text/html; charset=utf-8');
 
 include('lazy_mofo.php');
-
+include('conectar_bd.php');
+$conn = getCnxDB();
 $max_upload = ini_get('max_file_uploads');
 
 echo "
@@ -23,6 +24,9 @@ echo "
 	<link rel='stylesheet' type='text/css' href='style.css'>
 	<link rel='stylesheet' href='css/bootstrap.css'>
 	<link rel='stylesheet' href='css/animate.css'>	
+
+	<link rel='stylesheet' href='css/font-awesome.min.css'>		
+
 </head>
 <body>
 	<script type='text/javascript' src='js/form_carga-scripts.js'></script>
@@ -31,9 +35,11 @@ echo "
 	<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js'></script>
 	<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js'></script>
 
-	<div id='wait' style='display: none; width: 100%; height: 100%; top: 100px; left: 0px; position: fixed; z-index: 10000; text-align: center;'>
-	<img src='images/ajax-loader.gif' width='45' height='45' alt='Loading...' style='position: fixed; top: 50%; left: 50%;' />
-</div>
+	<div id='wait' style='display: none; width: 100%; height: 100%; top: 300px; left: 0px; position: fixed; z-index: 10000; text-align: center;'>
+		<div class='progress'>
+			<div class='progress-bar' role='progressbar' style='width: 0%' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100'>0%</div>
+		</div>
+	</div>
 "; 
 
 // enter your database host, name, username, and password
@@ -119,36 +125,52 @@ $(document).ready(function() {
 	});
 </script>
 
-
 <script>
-	$(document).ready(function() {
-		$('#form_actualizacion').submit(function (e) { 
-			e.preventDefault();	
-			$('#form2-submit').attr('disabled', true);		
-			var parametros=new FormData($(this)[0]);				
-		
-			$.ajax({
-				url: 'cargar_archivos_result.php',
-				type: 'post',
-				data: parametros,
-				contentType: false,
-				processData: false,
-				success: function(text){
-					if (text == 'success'){	
-						alert('Proceso culminado satisfactoriamente');		
-						window.location='index.php';																				
-					} else {
-						formError();
-						submitMSG2(false,text);
-					}	
-					$('#form2-submit').attr('disabled', false);															
-				}
-			});				
-						
-				
-			return false;			
-		});	
-	});
+$(document).ready(function() {
+
+	var percent = 0;
+	
+	timerId = setInterval(function() {
+		//increment progress bar
+		percent += 2;
+		$('.progress-bar').css('width', percent+'%');
+		$('.progress-bar').attr('aria-valuenow', percent);
+		$('.progress-bar').text(percent+'%');
+
+		//complete
+		if (percent == 100) {
+			clearInterval(timerId);
+			$('.information').show();
+		}
+	}, 1000);
+
+	$('#form_actualizacion').submit(function (e) { 
+		e.preventDefault();	
+		$('#form2-submit').attr('disabled', true);		
+		var parametros=new FormData($(this)[0]);				
+
+		$.ajax({
+			url: 'cargar_archivos_result.php',
+			type: 'post',
+			data: parametros,
+			contentType: false,
+			processData: false,
+			success: function(text){
+				if (text == 'success'){	
+					alert('Proceso culminado satisfactoriamente');		
+					window.location='index.php';																				
+				} else {
+					formError();
+					submitMSG2(false,text);
+				}	
+				$('#form2-submit').attr('disabled', false);															
+			}
+		});				
+					
+			
+		return false;			
+	});	
+});
 </script>
 ";
 
@@ -217,7 +239,7 @@ echo "
 			</h2>
 			<p>
 				<form role='form' enctype='multipart/form-data' name='form_actualizacion' id='form_actualizacion' 
-				data-toggle='validator' class='shake' >
+				data-toggle='validator' class='shake' action = 'cargar_archivos_result.php' method='post'>
 					<div class='form-group'>						 
 						<label for='inputLab'>
 							Laboratorio
@@ -240,7 +262,7 @@ echo "
 					</div>
 					<div class='form-group'>				
 						<div class='form-group'>
-							<input type='file' class='form-control-file' id='archivospdf' name='archivospdf' accept='.zip' required/>											
+							<input type='file' class='form-control-file' id='archivospdf[]' name='archivospdf[]' accept='.zip' multiple required/>											
 						</div>										
 						<button type='submit' id='form2-submit' class='btn btn-democratest'>
 							Procesar
