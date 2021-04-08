@@ -14,44 +14,78 @@ ini_set('max_execution_time', 200);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
-    if(copy($_FILES['archivospdf']['tmp_name'], $dir_subida.$_FILES['archivospdf']['name']))
-    {
-       //obtenemos datos de nuestro ZIP
-        $nombre = $_FILES["archivospdf"]["name"];
-        $ruta = $_FILES["archivospdf"]["tmp_name"];
-        $tipo = $_FILES["archivospdf"]["type"];
+    foreach ($_FILES['archivospdf']['name'] as $i => $name) {
+        if (strlen($_FILES['archivospdf']['name'][$i]) > 1) {
+            if (move_uploaded_file($_FILES['archivospdf']['tmp_name'][$i], $dir_subida.$name)) {
+            
+            //if(copy($_FILES['archivospdf']['tmp_name'], $dir_subida.$_FILES['archivospdf']['name'])){
+            //obtenemos datos de nuestro ZIP
+                $nombre = $_FILES["archivospdf"]["name"][$i];
+                $ruta = $_FILES["archivospdf"]["tmp_name"][$i];
+                $tipo = $_FILES["archivospdf"]["type"][$i];
 
-        $ext = pathinfo($nombre, PATHINFO_EXTENSION);
+                $ext = pathinfo($nombre, PATHINFO_EXTENSION);
 
-        switch ($ext)
-        {
-            case 'zip':
-                // Función descomprimir 
-                $zip = new ZipArchive;
-                if ($zip->open($ruta) === TRUE) 
+                /*
+                echo "nombre:" . $nombre;
+                echo "ruta:" . $ruta;
+                echo "tipo:" . $tipo;
+                echo "ext:" . $ext;
+                */
+
+                switch ($ext)
                 {
-                    //función para extraer el ZIP
-                    $extraido = $zip->extractTo($dir_subida);                    
-                    $zip->close();
+                    case 'zip':                        
+                        try {
+                            // Función descomprimir 
+                            $zip = new ZipArchive;
+                            
+                            //if ($zip->open($ruta) === TRUE) 
+                            if ($zip->open($dir_subida.$nombre) === TRUE) 
+                            {
+                                //función para extraer el ZIP
+                                $extraido = $zip->extractTo($dir_subida);                    
+                                $zip->close();
 
-                    $from = $dir_subida . substr($nombre,0,strlen($nombre)-4);
-                    $to = $dir_subida;                  
-                    
-                    $dir = opendir($from);
+                                $from = $dir_subida . substr($nombre,0,strlen($nombre)-4);
+                                $to = $dir_subida;                  
+
+                                //echo  "from:" . $from;
                                 
-                    //Recorro el directorio para leer los archivos que tiene
-                    while(($file = readdir($dir)) !== false){
-                        //Leo todos los archivos excepto . y ..
-                        if(strpos($file, '.') !== 0){
-                            //Copio el archivo manteniendo el mismo nombre en la nueva carpeta
-                            copy($from.'/'.$file, $to.'/'.$file);
+                                if(file_exists($from) && is_dir($from))
+                                {
+                                    $dir = opendir($from);
+                                    
+                                    //Recorro el directorio para leer los archivos que tiene
+                                    while(($file = readdir($dir)) !== false){
+                                        //Leo todos los archivos excepto . y ..
+                                        if(strpos($file, '.') !== 0){
+                                            //Copio el archivo manteniendo el mismo nombre en la nueva carpeta
+                                            copy($from.'/'.$file, $to.'/'.$file);
+                                        }
+                                    }
+                                    $subidos = true;
+                                }  
+                                else
+                                {
+                                    //verifico si los archivos se descomprimieron en el directorio raiz
+                                    $carpeta = @scandir($dir_subida);
+                                    //Miramos si existen archivos
+                                    if (count($carpeta) > 2){
+                                        //echo 'El directorio tiene archivos';
+                                        $subidos = true;
+                                    }
+                                }               
+                            }
                         }
-                    }
-                    $subidos = true;
-                }
-                break;                     
-        }         
-        
+                        catch (Exception $e) {
+                            echo "Ha ocurrido un error procesando el archivo zip:" . $e;
+                        }
+                        break;                     
+                }         
+                
+            }  
+        }  
     }       
 
     if ($subidos)
@@ -63,12 +97,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     }    
 }
 
+
 if ($success && $errorMSG == ""){
     echo "success";
 }else{
      if($errorMSG == ""){
          echo "Ha ocurrido un error procesando el archivo.";
-     } else {
+     }
+     else {
          echo $errorMSG;
      }
 }
