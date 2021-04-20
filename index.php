@@ -301,6 +301,24 @@ echo "
 				}
 			</script>
 
+			<a href='javascript: marcar_desmarcar()' class='btn btn-democratest'>Marcar/Desmarcar</a>
+			<script>
+				function marcar_desmarcar(){
+					$.ajax({
+						url: 'actualizar_enviomail.php',
+						type: 'post',						
+						dataType:'html',
+						asycn:false, 
+						success: function(text){
+							if (text == 'success'){                               
+								window.location='index.php';								
+							} 
+						}
+					});
+				}
+			</script>
+
+
 			<a href='javascript:enviarmail_batch()' class='btn btn-democratest'>Enviar emails en Lote</a>
 			<script>
 				function enviarmail_batch(){
@@ -367,7 +385,7 @@ $lm->rename['fecha_envio'] = 'Fecha Envio';
 //$lm->form_input_control['id'] = array('type' => 'select', 'sql' => 'select id from test_paciente');
 
 // optional, define editable input controls on the grid
-$lm->grid_input_control["enviar"] = array("type" => 'checkbox');
+$lm->grid_input_control["enviar"]= array("type" => 'checkbox');
 $lm->grid_input_control['is_active'] = array('type' => 'checkbox');
 $lm->grid_input_control["pasaporte_paciente"] = array("type" => 'text');
 $lm->grid_input_control["nombre_paciente"] = array("type" => 'text');
